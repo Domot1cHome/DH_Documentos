@@ -74,9 +74,9 @@ render() {
 
         <Image style={{ width: 200, height: 200, }} source={require('/ProyectosReactNative/DH/Recursos/DH.png')}/>
 
-        <Input leftIcon={<Icon name='face' size={24} color='#e31a1a'/>}  
+        <Input rightIcon={<Icon name='face' size={24} color='#e31a1a'/>}  
         placeholder='Usuario' 
-        inputStyle={{paddingLeft: 30, paddingRight: 20}} 
+        inputStyle={{paddingLeft: 20}} 
         containerStyle={{width: 200, height: 35, borderWidth: 1, borderColor: '#e31a1a',borderRadius: 20, alignItems:'center', justifyContent:'center'}}
         inputContainerStyle={{borderBottomWidth: 0}}
         onChangeText={(dato)=>this.setState({usuario:dato})}
@@ -84,10 +84,10 @@ render() {
 
         <Text></Text>
 
-        <Input leftIcon={<Icon name='lock' size={24} color='#e31a1a'/>}  
+        <Input rightIcon={<Icon name='lock' size={24} color='#e31a1a'/>}  
         placeholder='Contraseña' 
         secureTextEntry={true}
-        inputStyle={{paddingLeft: 30, paddingRight: 20}} 
+        inputStyle={{paddingLeft: 20}} 
         containerStyle={{width: 200, height: 35, borderWidth: 1, borderColor: '#e31a1a', borderRadius: 20, alignItems:'center', justifyContent:'center'}}
         inputContainerStyle={{borderBottomWidth: 0}}
         onChangeText={(dato)=>this.setState({contraseña:dato})}
