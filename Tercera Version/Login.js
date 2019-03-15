@@ -37,17 +37,12 @@ IrS() {
 }
 
 
-Metodo(){
-  fetch("https://xdomoticxhome.000webhostapp.com/Servicios/L.php?usuario="+''+this.state.usuario+"&codigo="+''+this.state.contraseña)
-  .then((response) => response.json())
-  .then((responseJson) =>
+async Metodo(){
+  
+  let respuesta = await fetch("https://xdomoticxhome.000webhostapp.com/Servicios/L.php?usuario="+''+this.state.usuario+"&codigo="+''+this.state.contraseña)
+  let datos =  await respuesta.json();
 
-    {
-    console.log(''+responseJson[0]+responseJson[1]+responseJson[2])
-    }
-
-  )
-  .catch((error) =>{console.error(error)});
+  console.log("DIZQUE:"+datos);
 
     
   {/*

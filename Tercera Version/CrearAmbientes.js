@@ -1,107 +1,166 @@
 
-// Se importan las librerias necesarias para construir los diferentes componentes de la vista
 import React from 'react';
-import { StyleSheet, Text, View,} from 'react-native';
+import { StyleSheet, Text, View, TextInput, Image,ScrollView } from 'react-native';
+import ActionButton from 'react-native-circular-action-menu';
 import { Icon, Input, Button, } from 'react-native-elements';
 
-//CLASE ENCARGADA DE DIBUJAR LO QUE TENDRA EL ENCABEZADO
+
+
+
 class ClaseEncabezado extends React.Component {
   render() {
     return (
       <View style={styles.cabeza}>
-        <Text style={{ color: 'white', }}>
-          Crear Ambientes
-         </Text>
+      <Text style={{ color: 'white', }}>
+      Crear Ambiente
+      </Text>
       </View>
-    );
+      );
   }
 };
 
 
 export default class CrearAmbientes extends React.Component {
 
-  //EN ESTA VARIABLE JUSTO EN LA PROPIEDAD HEADER TITLE SE INYECTA LA CLASE CLASE ENCABEZADO
+  
   static navigationOptions = {
     headerTitle: <ClaseEncabezado/>,
-    headerLeft: null,
+    //headerLeft: null,
     headerStyle: {
       backgroundColor: '#e31a1a',
     },
   };
 
-  //Iniciamos el constructor, las variables y enrutamos los metdos que seran usados posteriormente en la clase 
+  
   constructor(props) {
     super(props);
-    this.state = { variable1: "", variable2: ""};
-    this.Metodo = this.Metodo.bind(this);
-  
+    this.state = {nombre:"",cantidadAprendicez:"",cantidadDispositivos:"",respuestaBoolean:false,};
+    this.Metodo = this.Metodo.bind(this);   
   }
 
-  Metodo() {
-    alert("Mensaje trucho");
-  }
+  
+ async Metodo(){
+
+  let respuesta = await fetch("https://xdomoticxhome.000webhostapp.com/Servicios/CxA.php?n="+this.state.nombre+"&cA="+this.state.cantidadAprendicez+"&cC="+this.state.cantidadDispositivos)
+  let datos =  await respuesta.json();
+  this.setState({respuestaBoolean:datos});
+
+ }
+  
 
   //Metodo encargado de mostrar todos los componentes
   render() {
     return (
-      <View style={estilos.container}>
-        <View style={estilos.cuerpo}>
+      <View style={styles.container}>
 
-          <View style={estilos.cuerpo}>
+      <View style={styles.cuerpo}>
 
+        <Input leftIcon={<Icon name='school' size={24} color='#e31a1a'/>}  
+        placeholder='Nombre del Ambiente' 
+        inputStyle={styles.separadorCampoTextoInterno} 
+        containerStyle={styles.campoTexto}
+        inputContainerStyle={{borderBottomWidth: 0}}
+        onChangeText={(dato)=>this.setState({nombre:dato})}
+        />
 
-          </View>
+        <View style={{padding:10}}/>
 
-          <Input leftIcon={<Icon name='school' size={24} color='#e31a1a'/>}  
-            placeholder='Digite el nombre del Ambiente' 
-            inputStyle={{paddingLeft: 30, paddingRight: 20}} 
-            containerStyle={{width: 200, height: 35, borderWidth: 1, borderColor: '#e31a1a',borderRadius: 20, alignItems:'center', justifyContent:'center'}}
-            inputContainerStyle={{borderBottomWidth: 0}}
-            />
+        <Input leftIcon={<Icon name='person-pin' size={24} color='#e31a1a'/>}  
+        placeholder='Cantidad de aprendices' 
+        keyboardType='numeric'
+        inputStyle={styles.separadorCampoTextoInterno} 
+        containerStyle={styles.campoTexto}
+        inputContainerStyle={{borderBottomWidth: 0}}
+        onChangeText={(dato)=>this.setState({cantidadAprendicez:dato})}
+        />
 
-          <Input leftIcon={<Icon name='person' size={24} color='#e31a1a'/>}  
-            placeholder='Digite la cantidad de aprendices permitidos' 
-            inputStyle={{paddingLeft: 30, paddingRight: 20}} 
-            containerStyle={{width: 200, height: 35, borderWidth: 1, borderColor: '#e31a1a',borderRadius: 20, alignItems:'center', justifyContent:'center'}}
-            inputContainerStyle={{borderBottomWidth: 0}}
-            />
+        <View style={{padding:10}}/>
 
-           <Button title='Agregar Ambiente' 
-            type='outline' 
-            titleStyle={{color:'#e31a1a'}} 
-            containerStyle={{ width: 75,height: 75, borderRadius: 360 }} 
-            buttonStyle={{borderColor:'#e31a1a',}}  
-            /> 
+        <Input leftIcon={<Icon name='devices-other' size={24} color='#e31a1a'/>}  
+        placeholder='Cantidad de dispositivos aceptados' 
+        keyboardType='numeric'
+        inputStyle={styles.separadorCampoTextoInterno} 
+        containerStyle={styles.campoTexto}
+        inputContainerStyle={{borderBottomWidth: 0}}
+        onChangeText={(dato)=>this.setState({cantidadDispositivos:dato})}
+        />
 
+        <View style={{padding:20}}/>
 
-
-
-
-
+        <View> 
+          <Button title='Agregar Ambiente' 
+          type='solid'
+          titleStyle={{color:'#ffff'}} 
+          containerStyle={{ width:390, height:45,}} 
+          buttonStyle={{borderColor:'#ffff',backgroundColor:'#e31a1a', borderRadius:20,}}  
+          onPress={this.Metodo}
+          /> 
         </View>
+
+      </View>
+
+      <ActionButton icon={<Icon name='fingerprint' size={50} color='#e31a1a'/>} btnOutRange='#ffff' buttonColor="#ffff">
+
+        <ActionButton.Item buttonColor='#ffff'  onPress={this.Metodo}> 
+        <Icon name='face' color='#e31a1a' size={30}/>
+        </ActionButton.Item>
+
+        <ActionButton.Item buttonColor='#ffff' onPress={this.IrVistaAmbientes}> 
+        <Icon name='school' color='#e31a1a' size={30}/>
+        </ActionButton.Item>
+
+        <ActionButton.Item buttonColor='#ffff'  onPress={this.Metodo}> 
+        <Icon name='devices-other' color='#e31a1a' size={30}/>
+        </ActionButton.Item>
+
+        <ActionButton.Item buttonColor='#ffff'  onPress={this.Metodo}> 
+        <Icon name='alarm' color='#e31a1a' size={30}/>
+        </ActionButton.Item>
+
+        <ActionButton.Item buttonColor='#ffff'  onPress={this.Metodo}> 
+        <Icon name='settings' color='#e31a1a' size={30}/>
+        </ActionButton.Item>
+      </ActionButton>
+
       </View >
-    );
+      );
+    }
   }
-}
 
 
-// Hoja de estilos 
-const estilos = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column'
-  },
-  cabeza: {
-    flex: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cuerpo: {
-    flex: 10,
-    backgroundColor: '#ffff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  
+  // Hoja de estilos 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      flexDirection: 'column',
+      backgroundColor: 'pink'
+    },
+    cabeza: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
 
-});
+    },
+    cuerpo: {
+      flex: 1,
+      backgroundColor: '#ffff',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    campoTexto: {
+      width: 390,
+      height: 45,
+      borderWidth: 1,
+      borderColor: '#e31a1a',
+      borderRadius: 20, 
+      alignItems:'center', 
+      justifyContent:'center'
+    },
+    separadorCampoTextoInterno: {
+      paddingLeft: 20, 
+      paddingRight: 20,
+    },
+    
+
+
+  });

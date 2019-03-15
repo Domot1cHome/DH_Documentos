@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, ToastAndroid } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, FlatList } from 'react-native';
 import ActionButton from 'react-native-circular-action-menu';
 import { Button, Card, Icon, } from 'react-native-elements'
 
@@ -30,6 +30,7 @@ export default class Ambientes extends React.Component {
     this.state={};
     this.ConsultarAmbientes = this.ConsultarAmbientes.bind(this);
     this.GuardarDatosEnArreglo = this.GuardarDatosEnArreglo.bind(this);
+    this.MostrarEnPantalla = this.MostrarEnPantalla.bind(this);
   }
 
 
@@ -71,16 +72,31 @@ export default class Ambientes extends React.Component {
     }
     this.state={daticos:arregloDatos};
     console.log("Se ha terminado de GuardarDatosEnArreglo");
+    this.MostrarEnPantalla();
   }
 
+  async MostrarEnPantalla(){
+
+    let arreglo = await Object.values(this.state.daticos) ;
+    var foo = "";
+
+
+    for(let i=0;i<arreglo.length;i++){
+      var string = "\n"+arreglo[i];
+      foo += string;
+    }
+
+    
+    this.setState({datoErre:<Text>{foo}</Text>});
+    console.log("Se ha MostrarEnPantalla ");
+  }
+
+
   
-
-
-
-
   render() { 
 
 
+    
     return (
 
       <View style={styles.container}>
@@ -89,54 +105,23 @@ export default class Ambientes extends React.Component {
 
       <ScrollView>
 
-      <View>
+      <View style={{padding: 20, alignContent:'center', justifyContent: 'center', alignItems:'center'}}>
+      <Text>{this.state.datoErre}</Text>
 
-      <Text> {this.state.nombreTarjeta}</Text>
-      
       </View>
-
+      
 
       </ScrollView>
 
 
       <View style={{alignItems:'center', alignContent:'center'}}>
 
-      <Button title='Consulta' 
+      <Button title='Cargar registros' 
       type='solid'
       titleStyle={{color:'#ffff'}} 
       containerStyle={{ width:250, height:75,}} 
       buttonStyle={{borderColor:'#ffff',backgroundColor:'#e31a1a', borderRadius:20,}}  
       onPress={this.ConsultarAmbientes}/>
-
-      <Button title='Equis' 
-      type='solid'
-      titleStyle={{color:'#ffff'}} 
-      containerStyle={{ width:250, height:75,}} 
-      buttonStyle={{borderColor:'#ffff',backgroundColor:'#e31a1a', borderRadius:20,}}  
-      onPress={
-
-        this.Funcion=()=>{
-
-          var arreglo =  Object.values(this.state.daticos) ;
-          var foo = "";
-          
-          
-          for(let i=0;i<arreglo.length;i++){
-            var string = "\n"+"El arreglo en la posición: "+i+"\n"+"Devolvio: "+arreglo[i];
-            foo += string;
-
-          }
-          
-          var foo1=arreglo[0][1];
-          console.log("La consulta devolvio: "+foo1);
-          this.state={nombreTarjeta:foo1};
-          this.state={datosEquis:arreglo};
-
-        }
-
-      }/>
-
-
 
       </View>   
 
@@ -145,16 +130,34 @@ export default class Ambientes extends React.Component {
       <View style={styles.pie}>
       
       <ActionButton icon={<Icon name='fingerprint' size={50} color='#e31a1a'/>} btnOutRange='#ffff' buttonColor="#ffff">
-      <ActionButton.Item buttonColor='#ffff'  onPress={this.Metodo}> 
-      <Icon name='control-point' color='#e31a1a' size={30}/>
-      </ActionButton.Item>
-      
+        
+        <ActionButton.Item buttonColor='#ffff'  onPress={()=>{this.props.navigation.navigate('CrearAmbientes')}}> 
+        <Icon name='control-point' color='#e31a1a' size={30}/>
+        </ActionButton.Item>
+
       </ActionButton>
       </View>
 
       </View >
 
       );
+ 
+    {/*
+    return(
+
+      <View style={{flexDirection:'column', alignItems:'center', alignContent:'center',justifyContent:'center'}}>
+        
+        {this.state.datoErre}
+
+        <Button title='Cargar registros' 
+        type='solid'
+        titleStyle={{color:'#ffff'}} 
+        containerStyle={{ width:250, height:75,}} 
+        buttonStyle={{borderColor:'#ffff',backgroundColor:'#e31a1a', borderRadius:20,}}  
+        onPress={this.ConsultarAmbientes}/>
+
+      </View>)
+    */}
   }
 
 }
