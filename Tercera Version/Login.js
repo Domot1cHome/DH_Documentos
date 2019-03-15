@@ -15,12 +15,11 @@ static navigationOptions = {
 //CONSTRUCTOR
 constructor(props) {
   super(props);
-  this.state ={usuario:"", contraseña:"",rol:"",};
+  this.state ={rol:"",usuario:"", contraseña:""};
   this.Metodo = this.Metodo.bind(this);
   this.IrA = this.IrA.bind(this);  
   this.IrI = this.IrI.bind(this);  
   this.IrS = this.IrS.bind(this);  
-  this.ImprimirRespuesta = this.ImprimirRespuesta.bind(this);  
 }
 
 
@@ -41,13 +40,13 @@ async Metodo(){
   
   let respuesta = await fetch("https://xdomoticxhome.000webhostapp.com/Servicios/L.php?usuario="+''+this.state.usuario+"&codigo="+''+this.state.contraseña)
   let datos =  await respuesta.json();
-
-  console.log("DIZQUE:"+datos);
+  this.state={caramelito:Object.values(datos[0])}
+  var foo = this.state.caramelito;
+  this.setState({rol:foo[0],usuario:foo[1],contraseña:foo[2],});
 
     
-  {/*
-    this.setState({rol:responseJson[2]});
-    if(responseJson[4]===this.state.usuario&responseJson[6]===this.state.contraseña){
+  
+    if(foo[1]===this.state.usuario&foo[2]===this.state.contraseña){
       if(this.state.rol=="Supervisor"){ 
         this.IrS();
       }else if(this.state.rol=="Instructor"){
@@ -58,17 +57,13 @@ async Metodo(){
     }else{
       alert('Usuario o contraseña incorrectos');
     }
-*/}
+
 
  
   
 }
 
-ImprimirRespuesta(){
-  fetch("https://xdomoticxhome.000webhostapp.com/Servicios/L.php?usuario="+''+this.state.usuario+"&codigo="+''+this.state.contraseña)
-  .then((response) => response.json())
-  .then((responseJson)=> {console.log(responseJson)})
-}
+
 
 //METODO ENCARGADO DE DIBUJAR LOS COMPONENTES EN PANTALLA
 render() {
