@@ -7,10 +7,12 @@ import { Button, Card, Icon, } from 'react-native-elements'
 class ClaseEncabezado extends React.Component {
   render() {
     return (
-      <View style={styles.cabeza}>
-      <Text style={{ color: 'white', }}>
-      Ambientes
-      </Text>
+     <View style={{flex:1,flexDirection:'row',paddingRight:57}}>
+        <View style={styles.cabeza}>
+          <Text style={{ color: 'white', }}>
+            Ambientes
+           </Text>
+        </View>
       </View>
       );
   }
@@ -20,6 +22,7 @@ export default class Ambientes extends React.Component {
 
   static navigationOptions = {
     headerTitle: <ClaseEncabezado/>,
+    headerTintColor: 'white',
     headerStyle: {
       backgroundColor: '#e31a1a',
     },
@@ -134,6 +137,10 @@ export default class Ambientes extends React.Component {
         <ActionButton.Item buttonColor='#ffff'  onPress={()=>{this.props.navigation.navigate('CrearAmbientes')}}> 
         <Icon name='control-point' color='#e31a1a' size={30}/>
         </ActionButton.Item>
+        
+        <ActionButton.Item buttonColor='#ffff'  onPress={()=>{this.props.navigation.navigate('CrearAmbientes')}}> 
+        <Icon name='control-point' color='#e31a1a' size={30}/>
+        </ActionButton.Item>
 
       </ActionButton>
       </View>
@@ -167,7 +174,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cabeza: {
-    flex: 10,
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
