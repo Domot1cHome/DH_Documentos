@@ -47,7 +47,6 @@ export default class Ambientes extends React.Component {
       mostrarAlerta2: true,
       id: idAmbiente,
     });
-    console.log("Se ejecuto mostrar Alerta2: "+idAmbiente);
   };
  
   ocultarAlerta = () => {
