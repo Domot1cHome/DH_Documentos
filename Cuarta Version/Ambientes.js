@@ -1,5 +1,6 @@
 import React from 'react';
 import {ActivityIndicator,Alert, FlatList, Image, ScrollView, StyleSheet, Text,View,} from 'react-native';
+import AwesomeAlert from 'react-native-awesome-alerts';
 import ActionButton from 'react-native-circular-action-menu';
 import {Button, Card, Icon,} from 'react-native-elements';
 
@@ -27,12 +28,24 @@ export default class Ambientes extends React.Component {
   
   constructor(props) {
     super(props);
-    this.state={datos:"", estaCargado:true,};
+    this.state={datos:"", estaCargado:true,eliminar:null,};
     this.LlenarTarjetas = this.LlenarTarjetas.bind(this);
     this.ValidarInserccion = this.ValidarInserccion.bind(this);
     this.ActualizarTarjetas = this.ActualizarTarjetas.bind(this);
     this.EliminarRegistro = this.EliminarRegistro.bind(this);
   }
+
+  mostrarAlerta = () => {
+    this.setState({
+      mostrarAlerta: true
+    });
+  };
+ 
+  ocultarAlerta = () => {
+    this.setState({
+      mostrarAlerta: false
+    });
+  };
 
   LlenarTarjetas(item){
     return (<View style={{padding:10}}><Card 
@@ -58,8 +71,7 @@ export default class Ambientes extends React.Component {
               type='solid'
               titleStyle={{color:'#ffff'}} 
               containerStyle={{padding:3,}} 
-              buttonStyle={{borderColor:'#ffff',backgroundColor:'#e31a1a', borderRadius:10,}} 
-             
+              buttonStyle={{borderColor:'#ffff',backgroundColor:'#e31a1a', borderRadius:10,}}
               />
 
               <Button
@@ -77,15 +89,23 @@ export default class Ambientes extends React.Component {
     this.setState({refrescar:!this.state.refrescar});
   }
 
-  ActualizarTarjetas(estaCargado){
-    if(estaCargado){
-      //console.log("ActualizarTarjetas estado Enviado:"+estaCargado);
-      //console.log("ActualizarTarjetas estado State:"+this.state.estaCargado);
+  ActualizarTarjetas(estaCargado, eliminar){
+    if(estaCargado&&eliminar){
+      fetch("https://xdomoticxhome.000webhostapp.com/Servicios/A.php")
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({datos:responseJson,estaCargado:!this.state.estaCargado,mostrarAlerta:true});
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    }else if(estaCargado){
+
       fetch("https://xdomoticxhome.000webhostapp.com/Servicios/A.php")
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({datos:responseJson,estaCargado:!this.state.estaCargado});
-        //console.log("ActualizarTarjetas estado State:"+this.state.estaCargado);
       })
       .catch((error) => {
         console.error(error);
@@ -94,13 +114,9 @@ export default class Ambientes extends React.Component {
   }
 
   ValidarInserccion(respuestaBD){ 
-    //console.log("ValidarInserccion:"+respuestaBD);
     if(respuestaBD=="true"){
-       //console.log("ValidarInserccion TRUE:"+respuestaBD);
       this.ActualizarTarjetas(this.state.estaCargado);
-
     }else if(respuestaBD=="false"){
-      //console.log("ValidarInserccion FALSE:"+respuestaBD);
         this.setState({estaCargado:!this.state.estaCargado});
     }
   }
@@ -109,10 +125,8 @@ export default class Ambientes extends React.Component {
     fetch("https://xdomoticxhome.000webhostapp.com/Servicios/ExA.php?id="+idAmbiente)
       .then((response) => response.json())
       .then((responseJson) => {
-        //console.log("EliminarRegistro estaCargado estado :"+this.state.estaCargado);
-        this.setState({estaCargado:!this.state.estaCargado});
-        this.ActualizarTarjetas(this.state.estaCargado);
-        //console.log("EliminarRegistro estaCargado estado actualizado:"+this.state.estaCargado);
+        this.setState({estaCargado:!this.state.estaCargado,eliminar:true});
+        this.ActualizarTarjetas(this.state.estaCargado,this.state.eliminar);
       })
       .catch((error) => {
         console.error(error);
@@ -120,9 +134,9 @@ export default class Ambientes extends React.Component {
   }
 
   render() {
+    const {mostrarAlerta} = this.state;
     //console.log("#R Se renderizó la vista");
     if(this.state.estaCargado!=true){
-      //console.log("#R estaCargado: "+this.state.estaCargado);
       return (<View style={styles.container}>
 
         <View style={styles.cuerpo}>
@@ -158,6 +172,22 @@ export default class Ambientes extends React.Component {
 
         </View>
 
+         <AwesomeAlert
+          show={mostrarAlerta}
+          showProgress={false}
+          title="Registro Eliminado"
+          message="Se ha eliminado satisfactoriamente"
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+          showConfirmButton={true}
+          confirmText="Continuar"
+          confirmButtonColor="#e31a1a"
+
+          onConfirmPressed={() => {
+            this.ocultarAlerta();
+          }}
+        />
+
         </View>);  
     }else{
       return(<View style={{flex:1, flexDirection:'row',justifyContent:'center',alignItems:'center'}}><ActivityIndicator size="large" color="#e31a1a" /></View>);
@@ -170,8 +200,8 @@ export default class Ambientes extends React.Component {
   }
 
   componentWillUpdate(){ 
-    //console.log("#2 Se actualizará la vista");
-    if(this.state.estaCargado==false){
+    //console.log("#2 Se actualizará la vista")
+    if(this.state.estaCargado!=true){
       this.state.estaCargado=true;
     }
   }
