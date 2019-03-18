@@ -28,11 +28,12 @@ export default class Ambientes extends React.Component {
   
   constructor(props) {
     super(props);
-    this.state={datos:"", estaCargado:true,eliminar:null,};
+    this.state={datos:"", estaCargado:true,eliminar:null,id:null};
     this.LlenarTarjetas = this.LlenarTarjetas.bind(this);
     this.ValidarInserccion = this.ValidarInserccion.bind(this);
     this.ActualizarTarjetas = this.ActualizarTarjetas.bind(this);
     this.EliminarRegistro = this.EliminarRegistro.bind(this);
+    
   }
 
   mostrarAlerta = () => {
@@ -40,10 +41,24 @@ export default class Ambientes extends React.Component {
       mostrarAlerta: true
     });
   };
+
+  mostrarAlerta2 = (idAmbiente) =>{
+    this.setState({
+      mostrarAlerta2: true,
+      id: idAmbiente,
+    });
+    console.log("Se ejecuto mostrar Alerta2: "+idAmbiente);
+  };
  
   ocultarAlerta = () => {
     this.setState({
       mostrarAlerta: false
+    });
+  };
+
+  ocultarAlerta2 = () => {
+    this.setState({
+      mostrarAlerta2: false
     });
   };
 
@@ -80,7 +95,8 @@ export default class Ambientes extends React.Component {
                 titleStyle={{color:'#ffff'}} 
                 containerStyle={{padding:3,}} 
                 buttonStyle={{borderColor:'#ffff',backgroundColor:'#e31a1a', borderRadius:10,}}
-                onPress={()=>{this.EliminarRegistro(item.idAmbiente)}} 
+                onPress={()=>{this.mostrarAlerta2(item.idAmbiente)}}//this.EliminarRegistro(item.idAmbiente)}} 
+
               />
 
             </View> 
@@ -122,7 +138,7 @@ export default class Ambientes extends React.Component {
   }
 
   EliminarRegistro(idAmbiente){
-    fetch("https://xdomoticxhome.000webhostapp.com/Servicios/ExA.php?id="+idAmbiente)
+    fetch("https://xdomoticxhome.000webhostapp.com/Servicios/DxA.php?id="+idAmbiente)
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({estaCargado:!this.state.estaCargado,eliminar:true});
@@ -133,8 +149,9 @@ export default class Ambientes extends React.Component {
       });
   }
 
+
   render() {
-    const {mostrarAlerta} = this.state;
+    const {mostrarAlerta,mostrarAlerta2} = this.state;
     //console.log("#R Se renderizó la vista");
     if(this.state.estaCargado!=true){
       return (<View style={styles.container}>
@@ -173,19 +190,39 @@ export default class Ambientes extends React.Component {
         </View>
 
          <AwesomeAlert
-          show={mostrarAlerta}
-          showProgress={false}
-          title="Registro Eliminado"
-          message="Se ha eliminado satisfactoriamente"
-          closeOnTouchOutside={true}
-          closeOnHardwareBackPress={false}
-          showConfirmButton={true}
-          confirmText="Continuar"
-          confirmButtonColor="#e31a1a"
+            show={mostrarAlerta}
+            showProgress={false}
+            title="Registro Eliminado"
+            message="Se ha eliminado satisfactoriamente"
+            closeOnTouchOutside={true}
+            closeOnHardwareBackPress={false}
+            showConfirmButton={true}
+            confirmText="Continuar"
+            confirmButtonColor="#e31a1a"
+            onConfirmPressed={() => {
+              this.ocultarAlerta();
+            }}
+        />
 
-          onConfirmPressed={() => {
-            this.ocultarAlerta();
-          }}
+        <AwesomeAlert
+            show={mostrarAlerta2}
+            showProgress={false}
+            title="¿Eliminar Registro?"
+            message="Se eliminará este ambiente"
+            closeOnTouchOutside={true}
+            closeOnHardwareBackPress={false}
+            showConfirmButton={true}
+            showCancelButton={true}
+            confirmText="Si"
+            cancelText="No"
+            confirmButtonColor="#e31a1a"
+
+            onConfirmPressed={() => {
+              this.ocultarAlerta2()
+              this.EliminarRegistro(this.state.id);
+            }}
+
+            onCancelPressed={() => {this.ocultarAlerta2()}}
         />
 
         </View>);  
