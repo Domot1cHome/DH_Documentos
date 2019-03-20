@@ -1,6 +1,5 @@
 import React from 'react';
 import {Alert, FlatList, Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, View, } from 'react-native';
-import AwesomeAlert from 'react-native-awesome-alerts';
 import ActionButton from 'react-native-circular-action-menu';
 import {Button, Icon, Input, } from 'react-native-elements';
 
@@ -10,13 +9,13 @@ class ClaseEncabezado extends React.Component {
      <View style={{flex:1,flexDirection:'row',paddingRight:57}}>
         <View style={styles.cabeza}>
           <Text style={{ color: 'white', }}>
-            Crear Ambientes
+            Editar Ambientes
            </Text>
         </View>
       </View>
       );
   }};
-export default class CrearAmbientes extends React.Component {
+export default class EditarAmbientes extends React.Component {
 
   static navigationOptions = {
     headerTitle: <ClaseEncabezado/>,
@@ -26,82 +25,73 @@ export default class CrearAmbientes extends React.Component {
     },
   };
 
-  mostrarAlerta = () => {
-    this.setState({
-      mostrarAlerta: true
-    });
-  };
-
-  ocultarAlerta = () => {
-    this.setState({
-      mostrarAlerta: false
-    });
-  };
-
   constructor(props) {
     super(props);
     this.state = {nombre:"",cantidadAprendices:"",cantidadDispositivos:"",};
-    this.Metodo = this.Metodo.bind(this);   
+    this.EditarAmbiente = this.EditarAmbiente.bind(this);   
   }
 
-  Metodo(datos){
+  EditarAmbiente(item){
 
-    if(this.state.nombre==""||this.state.cantidadAprendices==""||this.state.cantidadDispositivos==""){
-      console.log("Faltan datos");
-      this.mostrarAlerta();
-    }else{
-
-      consulta = "https://xdomoticxhome.000webhostapp.com/Servicios/CxA.php?n="+this.state.nombre+"&cA="+this.state.cantidadAprendices+"&cC="+this.state.cantidadDispositivos;      
-      fetch(consulta)
-      .then((response) => response.json())
-      .then((responseJson) => {
-
-
-          this.props.navigation.navigate('Ambientes', {respuestaBD:responseJson})
-
-        })
-      .catch((error) => {
-          console.error(error);
-      });
-
-
+    if(this.state.nombre==""){
+      this.state.nombre=item.nombre;
+      console.log("estado nombre: "+this.state.nombre)
+    }
+    
+    if(this.state.cantidadAprendices==""){
+      this.state.cantidadAprendices=item.capacidadAprendices;
+      console.log("estado cantidadAprendices: "+this.state.cantidadAprendices)
+    }
+    if(this.state.cantidadDispositivos==""){
+      this.state.cantidadDispositivos=item.capacidadComponentes;
+      console.log("estado cantidadDispositivos: "+this.state.cantidadDispositivos)
     }
 
-      
-  
+    
+    consulta = "https://xdomoticxhome.000webhostapp.com/Servicios/UxA.php?i="+item.idAmbiente+"&n="+this.state.nombre+"&cA="+this.state.cantidadAprendices+"&cC="+this.state.cantidadDispositivos;
+     console.log(consulta)
+    fetch(consulta)
+    .then((response) => response.json())
+    .then((responseJson) => {
+
+
+      this.setState({datos:responseJson,});
+      if(this.state.nombre==""&&this.state.cantidadAprendices==""&&this.state.cantidadDispositivos==""){
+        responseJson="false",
+        editar=false;
+      }
+      editar=true;
+      this.props.navigation.navigate('Ambientes', {respuestaBD:responseJson,editar:editar})
+
+      })
+    .catch((error) => {
+        console.error(error);
+    });  
+ 
   }
   
   render() {
     const {navigation} = this.props;
-    datos = navigation.getParam('enviarDatos','null');
-    if(datos!=null){
-      console.log("ESO"+datos);
+    item = navigation.getParam('item','null');
 
-    }
-
-    const {mostrarAlerta,} = this.state;
     return (
       <View style={styles.container}>
-
-        
 
         <View style={styles.cuerpo}>
 
           <KeyboardAvoidingView>
           <Input rightIcon={<Icon name='school' size={24} color='#e31a1a'/>}  
-          placeholder='Nombre del Ambiente' 
+          placeholder={item.nombre}
           inputStyle={styles.separadorCampoTextoInterno} 
           containerStyle={styles.campoTexto}
           inputContainerStyle={{borderBottomWidth: 0}}
           onChangeText={(dato)=>this.setState({nombre:dato})}
           />
          
-
           <View style={{padding:10}}/>
 
-        
           <Input rightIcon={<Icon name='person-pin' size={24} color='#e31a1a'/>}  
-          placeholder='Cantidad de aprendices' 
+          placeholder={item.capacidadAprendices}
           keyboardType='numeric'
           inputStyle={styles.separadorCampoTextoInterno} 
           containerStyle={styles.campoTexto}
@@ -114,7 +104,7 @@ export default class CrearAmbientes extends React.Component {
 
           
           <Input rightIcon={<Icon name='devices-other' size={24} color='#e31a1a'/>}  
-          placeholder='Cantidad de componentes' 
+          placeholder={item.capacidadComponentes}
           keyboardType='numeric'
           inputStyle={styles.separadorCampoTextoInterno} 
           containerStyle={styles.campoTexto}
@@ -126,28 +116,14 @@ export default class CrearAmbientes extends React.Component {
 
         <View style={styles.pie}>
 
-           <Button title='Añadir' 
+           <Button title='Actualizar' 
             type='solid'
             titleStyle={{color:'#ffff'}} 
             containerStyle={{ flex:1, height:75,padding:18}} 
             buttonStyle={{borderColor:'#ffff',backgroundColor:'#e31a1a', borderRadius:10,}}
-            onPress={this.Metodo}/>
+            onPress={()=>this.EditarAmbiente(item)}
+            />
         </View>
-
-        <AwesomeAlert
-            show={mostrarAlerta}
-            showProgress={false}
-            title="Datos incompletos"
-            message="Faltan datos por ingresar"
-            closeOnTouchOutside={true}
-            closeOnHardwareBackPress={false}
-            showConfirmButton={true}
-            confirmText="Continuar"
-            confirmButtonColor="#e31a1a"
-            onConfirmPressed={() => {
-              this.ocultarAlerta();
-            }}
-        />
 
         
   

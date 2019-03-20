@@ -28,10 +28,14 @@ export default class Ambientes extends React.Component {
   
   constructor(props) {
     super(props);
-    this.state={datos:"", estaCargado:true,eliminar:null,id:null};
+    this.state={datos:"", estaCargado:true, eliminar:null,id:null};
+
     this.LlenarTarjetas = this.LlenarTarjetas.bind(this);
-    this.ValidarInserccion = this.ValidarInserccion.bind(this);
+
     this.ActualizarTarjetas = this.ActualizarTarjetas.bind(this);
+    
+    this.ValidarInserccion = this.ValidarInserccion.bind(this);
+      
     this.EliminarRegistro = this.EliminarRegistro.bind(this);
     
   }
@@ -48,6 +52,12 @@ export default class Ambientes extends React.Component {
       id: idAmbiente,
     });
   };
+
+  mostrarAlerta3 = () => {
+    this.setState({
+      mostrarAlerta3: true
+    });
+  };
  
   ocultarAlerta = () => {
     this.setState({
@@ -61,7 +71,72 @@ export default class Ambientes extends React.Component {
     });
   };
 
+  ocultarAlerta3 = () => {
+    this.setState({
+      mostrarAlerta3: false
+    });
+  };
+
+  
+
+  EliminarRegistro(idAmbiente){
+    console.log("#ER EliminarRegistro");
+
+    fetch("https://xdomoticxhome.000webhostapp.com/Servicios/DxA.php?id="+idAmbiente)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({estaCargado:!this.state.estaCargado,eliminar:true});
+        this.ActualizarTarjetas(this.state.estaCargado,this.state.eliminar);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  ActualizarTarjetas(estaCargado, eliminar){
+    console.log("#AT ActualizarTarjetas");
+
+    if(estaCargado&&eliminar){
+      fetch("https://xdomoticxhome.000webhostapp.com/Servicios/RxA.php")
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({datos:responseJson,estaCargado:!this.state.estaCargado,mostrarAlerta:true});
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    }else if(estaCargado&&this.state.editar){
+      console.log("Entro!");
+      fetch("https://xdomoticxhome.000webhostapp.com/Servicios/RxA.php")
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({datos:responseJson,estaCargado:!this.state.estaCargado,});
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    }else if(estaCargado){
+
+      fetch("https://xdomoticxhome.000webhostapp.com/Servicios/RxA.php")
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({datos:responseJson,estaCargado:!this.state.estaCargado});
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }
+  }
+
   LlenarTarjetas(item){
+    console.log("#LlT LlenarTarjetas");
+
+    if(item.nombre == ""){
+      item.nombre = "Nulo";
+    }
+
     return (<View style={{padding:10}}><Card 
           title={item.nombre} 
           containerStyle={{borderRadius:10, borderColor:'#e31a1a'}} 
@@ -86,6 +161,7 @@ export default class Ambientes extends React.Component {
               titleStyle={{color:'#ffff'}} 
               containerStyle={{padding:3,}} 
               buttonStyle={{borderColor:'#ffff',backgroundColor:'#e31a1a', borderRadius:10,}}
+              onPress={()=>{this.props.navigation.navigate('EditarAmbientes', {item:item})}} 
               />
 
               <Button
@@ -93,7 +169,7 @@ export default class Ambientes extends React.Component {
                 type='solid'
                 titleStyle={{color:'#ffff'}} 
                 containerStyle={{padding:3,}} 
-                buttonStyle={{borderColor:'#ffff',backgroundColor:'#e31a1a', borderRadius:10,}}
+                 buttonStyle={{borderColor:'#ffff',backgroundColor:'#e31a1a', borderRadius:10,}}
                 onPress={()=>{this.mostrarAlerta2(item.idAmbiente)}}//this.EliminarRegistro(item.idAmbiente)}} 
 
               />
@@ -101,56 +177,34 @@ export default class Ambientes extends React.Component {
             </View> 
 
           </View></Card></View>);
+
     this.setState({refrescar:!this.state.refrescar});
   }
 
-  ActualizarTarjetas(estaCargado, eliminar){
-    if(estaCargado&&eliminar){
-      fetch("https://xdomoticxhome.000webhostapp.com/Servicios/A.php")
-      .then((response) => response.json())
-      .then((responseJson) => {
-        this.setState({datos:responseJson,estaCargado:!this.state.estaCargado,mostrarAlerta:true});
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-
-    }else if(estaCargado){
-
-      fetch("https://xdomoticxhome.000webhostapp.com/Servicios/A.php")
-      .then((response) => response.json())
-      .then((responseJson) => {
-        this.setState({datos:responseJson,estaCargado:!this.state.estaCargado});
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-    }
-  }
-
-  ValidarInserccion(respuestaBD){ 
+  ValidarInserccion(respuestaBD,respuestaE){ 
+    console.log("#VI ValidarInserccion");
+    
     if(respuestaBD=="true"){
       this.ActualizarTarjetas(this.state.estaCargado);
-    }else if(respuestaBD=="false"){
+    }
+
+    if(respuestaBD=="true"&&respuestaE==true){
+      
+      this.state={editar:true};
+      this.ActualizarTarjetas(this.state.estaCargado);
+
+      
+    }
+
+    else if(respuestaBD=="false"){
         this.setState({estaCargado:!this.state.estaCargado});
     }
   }
 
-  EliminarRegistro(idAmbiente){
-    fetch("https://xdomoticxhome.000webhostapp.com/Servicios/DxA.php?id="+idAmbiente)
-      .then((response) => response.json())
-      .then((responseJson) => {
-        this.setState({estaCargado:!this.state.estaCargado,eliminar:true});
-        this.ActualizarTarjetas(this.state.estaCargado,this.state.eliminar);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
-
 
   render() {
-    const {mostrarAlerta,mostrarAlerta2} = this.state;
+    console.log("#R Render");
+    const {mostrarAlerta,mostrarAlerta2, mostrarAlerta3} = this.state;
     //console.log("#R Se renderizó la vista");
     if(this.state.estaCargado!=true){
       return (<View style={styles.container}>
@@ -183,7 +237,7 @@ export default class Ambientes extends React.Component {
             titleStyle={{color:'#ffff'}} 
             containerStyle={{ flex:1, height:75,padding:18}} 
             buttonStyle={{borderColor:'#ffff',backgroundColor:'#e31a1a', borderRadius:10,}} 
-            onPress={()=>{this.props.navigation.navigate('CrearAmbientes')}} 
+            onPress={()=>{this.props.navigation.navigate('CrearAmbientes'),{enviarDatos:this.state.datos}}} 
             />
 
         </View>
@@ -224,6 +278,23 @@ export default class Ambientes extends React.Component {
             onCancelPressed={() => {this.ocultarAlerta2()}}
         />
 
+        <AwesomeAlert
+            show={mostrarAlerta3}
+            showProgress={false}
+            title="Registro Actualizado"
+            message="Se ha actualizado satisfactoriamente"
+            closeOnTouchOutside={true}
+            closeOnHardwareBackPress={false}
+            showConfirmButton={true}
+            confirmText="Continuar"
+            confirmButtonColor="#e31a1a"
+            onConfirmPressed={() => {
+              this.ocultarAlerta3();
+            }}
+        />
+
+
+
         </View>);  
     }else{
       return(<View style={{flex:1, flexDirection:'row',justifyContent:'center',alignItems:'center'}}><ActivityIndicator size="large" color="#e31a1a" /></View>);
@@ -246,7 +317,8 @@ export default class Ambientes extends React.Component {
     //console.log("#3 Se actualizó la vista");
     const {navigation} = this.props;
     respuestaBD = navigation.getParam('respuestaBD','0');
-    this.ValidarInserccion(respuestaBD);
+    respuestaE = navigation.getParam('hehe','false');
+    this.ValidarInserccion(respuestaBD,respuestaE);
   }
 
   componentWillUnmount(){
